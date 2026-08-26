@@ -423,8 +423,7 @@ The frontend communicates with the FastAPI backend.
 
 **5-Minute Pitch and Live Demo**
 
-[Watch the PayGuard AI Demo]((https://youtu.be/S6mnZo0Hitc?si=zLcpYTabbIBFx7Nc))
-
+[[Watch the PayGuard AI Demo](https://youtu.be/S6mnZo0Hitc?si=zLcpYTabbIBFx7Nc))]
 
 ## 🧪 Testing
 
