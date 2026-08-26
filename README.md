@@ -308,17 +308,10 @@ Therefore, PayGuard AI considers **PR-AUC, precision, recall, and F1** alongside
 
 ## 🖼️ Screenshots
 
-Add your final application screenshots to a folder such as:
-
-```text
-screenshots/
 ├── dashboard.png
 ├── transaction-analysis.png
 ├── risk-result.png
 └── analytics.png
-```
-
-Then add them here:
 
 ### Dashboard
 
@@ -332,7 +325,6 @@ Then add them here:
 
 ![Risk Result](screenshots/risk-result.png)
 
-> Replace the image paths above with the actual screenshot filenames included in your repository.
 
 ---
 
