@@ -423,24 +423,8 @@ The frontend communicates with the FastAPI backend.
 
 **5-Minute Pitch and Live Demo**
 
-> Add your final YouTube/Google Drive demo link here.
+[Watch the PayGuard AI Demo]((https://youtu.be/S6mnZo0Hitc?si=zLcpYTabbIBFx7Nc))
 
-```text
-[Watch the PayGuard AI Demo](YOUR-DEMO-LINK)
-```
-
-The recommended demo flow is:
-
-1. Introduce the fraud-detection problem.
-2. Explain the PayGuard AI solution.
-3. Show the system architecture.
-4. Demonstrate a normal transaction.
-5. Demonstrate a suspicious/high-risk transaction.
-6. Show the ML and rule-score breakdown.
-7. Explain the final APPROVE / REVIEW / BLOCK decision.
-8. Highlight the project's technical contribution.
-
----
 
 ## 🧪 Testing
 
