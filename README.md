@@ -6,6 +6,8 @@ PayGuard AI is an intelligent transaction-risk assessment system that combines *
 
 The system is designed to make fraud-risk decisions more **explainable, measurable, and practical** instead of relying only on a single ML prediction.
 
+[Live Demo](https://payguard-app.netlify.app/)
+
 ---
 
 ## 🎯 Problem Statement
