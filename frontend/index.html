@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PayGuard AI — Transaction Risk Engine</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="ambient-bg"></div>
+    <div class="grid-overlay"></div>
+    <div class="scanlines"></div>
+    <div class="noise"></div>
+
+    <div class="particles" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <nav class="nav-bar">
+
+        <div class="brand-area">
+
+            <div class="brand-mark">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="logo">
+                PayGuard<span>.AI</span>
+            </div>
+
+        </div>
+
+
+        <div class="nav-center">
+
+            <button id="tabAbout" class="tab-btn active">
+                <span class="nav-index">01</span>
+                Platform
+            </button>
+
+            <button id="tabDashboard" class="tab-btn">
+                <span class="nav-index">02</span>
+                Risk Console
+            </button>
+
+        </div>
+
+
+        <div class="system-indicator">
+
+            <span class="live-dot"></span>
+
+            <div>
+                <small>SYSTEM</small>
+                <strong>ONLINE</strong>
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ABOUT / LANDING PAGE -->
+
+    <section id="aboutView" class="view-section active">
+
+        <div class="about-hero">
+
+            <div class="about-content">
+
+                <div class="eyebrow">
+                    <span class="eyebrow-line"></span>
+                    INTELLIGENT TRANSACTION SECURITY
+                </div>
+
+                <h1>
+                    Stop fraud
+                    <span class="accent-word">before</span>
+                    <br>
+                    it becomes a
+                    <span class="outline-word">loss.</span>
+                </h1>
+
+                <p class="hero-description">
+                    PayGuard AI is an intelligent transaction risk engine
+                    designed to analyze behavioral signals, transaction
+                    velocity, account history and contextual anomalies
+                    before a payment reaches final settlement.
+                </p>
+
+                <div class="hero-actions">
+
+                    <button id="launchConsoleBtn" class="btn-primary-launch">
+                        <span>Launch Risk Console</span>
+                        <span class="arrow">↗</span>
+                    </button>
+
+                    <div class="security-status">
+                        <span class="status-ring"></span>
+                        <span>REAL-TIME ANALYSIS ACTIVE</span>
+                    </div>
+
+                </div>
+
+                <div class="hero-metrics">
+
+                    <div class="hero-metric">
+                        <strong>01</strong>
+                        <span>
+                            Behavioral<br>
+                            Intelligence
+                        </span>
+                    </div>
+
+                    <div class="hero-metric">
+                        <strong>02</strong>
+                        <span>
+                            Rule-Based<br>
+                            Detection
+                        </span>
+                    </div>
+
+                    <div class="hero-metric">
+                        <strong>03</strong>
+                        <span>
+                            Risk-Based<br>
+                            Decisioning
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="risk-visual">
+
+                <div class="visual-header">
+                    <span>PAYMENT SIGNAL MAP</span>
+                    <span class="visual-live">LIVE</span>
+                </div>
+
+                <div class="core-system">
+
+                    <div class="core-ring ring-one"></div>
+                    <div class="core-ring ring-two"></div>
+                    <div class="core-ring ring-three"></div>
+
+                    <div class="core-center">
+                        <div class="core-symbol">
+                            PG
+                        </div>
+                        <span>RISK ENGINE</span>
+                    </div>
+
+                </div>
+
+                <svg class="network-lines"
+                     viewBox="0 0 700 520"
+                     preserveAspectRatio="none">
+
+                    <path d="M100 100 C240 100 250 260 350 260"/>
+                    <path d="M600 110 C480 110 450 220 350 260"/>
+                    <path d="M110 420 C230 420 250 310 350 260"/>
+                    <path d="M590 410 C480 410 450 310 350 260"/>
+
+                </svg>
+
+                <div class="signal-node node-a">
+                    <div class="node-icon">01</div>
+                    <strong>BEHAVIOR</strong>
+                    <small>Pattern Analysis</small>
+                </div>
+
+                <div class="signal-node node-b">
+                    <div class="node-icon amber">02</div>
+                    <strong>VELOCITY</strong>
+                    <small>Transaction Frequency</small>
+                </div>
+
+                <div class="signal-node node-c">
+                    <div class="node-icon red">03</div>
+                    <strong>HEURISTICS</strong>
+                    <small>Rule Evaluation</small>
+                </div>
+
+                <div class="signal-node node-d">
+                    <div class="node-icon ivory">04</div>
+                    <strong>HISTORY</strong>
+                    <small>Account Intelligence</small>
+                </div>
+
+                <span class="data-particle p1"></span>
+                <span class="data-particle p2"></span>
+                <span class="data-particle p3"></span>
+                <span class="data-particle p4"></span>
+
+                <div class="visual-footer">
+                    <span>ML CORE</span>
+                    <span>+</span>
+                    <span>HEURISTIC ENGINE</span>
+                    <span>+</span>
+                    <span>VELOCITY TRACE</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ABOUT PLATFORM -->
+
+        <div class="about-platform">
+
+            <div class="section-heading">
+
+                <span>WHY PAYGUARD AI</span>
+
+                <h2>
+                    One transaction.
+                    <br>
+                    Multiple layers of intelligence.
+                </h2>
+
+            </div>
+
+            <div class="intelligence-grid">
+
+                <article class="intelligence-card">
+
+                    <div class="card-number">01</div>
+
+                    <h3>Behavioral Intelligence</h3>
+
+                    <p>
+                        Detects unusual transaction behavior by examining
+                        contextual patterns instead of relying only on
+                        transaction amount.
+                    </p>
+
+                    <div class="card-line"></div>
+
+                </article>
+
+                <article class="intelligence-card">
+
+                    <div class="card-number">02</div>
+
+                    <h3>Heuristic Defense</h3>
+
+                    <p>
+                        Rule-based signals identify suspicious conditions
+                        such as new devices, location changes and previous
+                        fraud indicators.
+                    </p>
+
+                    <div class="card-line"></div>
+
+                </article>
+
+                <article class="intelligence-card">
+
+                    <div class="card-number">03</div>
+
+                    <h3>Risk Decisioning</h3>
+
+                    <p>
+                        The engine converts multiple signals into a single
+                        interpretable risk score and recommends approve,
+                        review or block.
+                    </p>
+
+                    <div class="card-line"></div>
+
+                </article>
+
+            </div>
+
+        </div>
+
+
+        <!-- PROJECT STATEMENT -->
+
+        <div class="project-statement">
+
+            <div class="statement-label">
+                SYSTEM OBJECTIVE
+            </div>
+
+            <div class="statement-text">
+                <span>ANALYZE</span>
+                <span>DETECT</span>
+                <span>SCORE</span>
+                <span class="highlight">PROTECT</span>
+            </div>
+
+            <p>
+                From transaction input to risk decision,
+                PayGuard AI creates an explainable security layer
+                between payment initiation and settlement.
+            </p>
+
+        </div>
+
+
+        <footer class="about-footer">
+
+            <div>PAYGUARD AI</div>
+            <div>TRANSACTION RISK ENGINE</div>
+            <div>BUILD • ANALYZE • PROTECT</div>
+
+        </footer>
+
+    </section>
+
+
+    <!-- DASHBOARD -->
+
+    <section id="dashboardView" class="view-section">
+
+        <div class="dashboard-heading">
+
+            <div>
+
+                <div class="eyebrow">
+                    <span class="eyebrow-line"></span>
+                    SECURITY OPERATIONS
+                </div>
+
+                <h2>
+                    Risk Engine Console
+                </h2>
+
+            </div>
+
+            <div class="console-status">
+
+                <span class="live-dot"></span>
+
+                ENGINE OPERATIONAL
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-grid">
+
+            <!-- TRANSACTION INPUT -->
+
+            <div class="panel transaction-panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-icon">
+                        ◈
+                    </div>
+
+                    <div>
+
+                        <span class="panel-kicker">
+                            INPUT MODULE
+                        </span>
+
+                        <h3 class="panel-title">
+                            Analyze Transaction
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <form id="txnForm">
+
+                    <div id="formError"
+                         class="error-banner"
+                         hidden>
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="amount">
+                            TRANSACTION AMOUNT
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-prefix">₹</span>
+
+                            <input
+                                type="number"
+                                id="amount"
+                                name="amount"
+                                placeholder="5000"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="payment_method">
+                                PAYMENT METHOD
+                            </label>
+
+                            <select id="payment_method"
+                                    name="payment_method">
+
+                                <option value="Card">Card</option>
+                                <option value="UPI">UPI</option>
+                                <option value="NetBanking">NetBanking</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="device_type">
+                                DEVICE TYPE
+                            </label>
+
+                            <select id="device_type"
+                                    name="device_type">
+
+                                <option value="Mobile">Mobile</option>
+                                <option value="Desktop">Desktop</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="location">
+                            TRANSACTION LOCATION
+                        </label>
+
+                        <input
+                            type="text"
+                            id="location"
+                            name="location"
+                            placeholder="e.g. Delhi"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="transactions_last_hour">
+                                TRANSACTIONS / HOUR
+                            </label>
+
+                            <input
+                                type="number"
+                                id="transactions_last_hour"
+                                name="transactions_last_hour"
+                                value="1"
+                                min="0"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="account_age_days">
+                                ACCOUNT AGE / DAYS
+                            </label>
+
+                            <input
+                                type="number"
+                                id="account_age_days"
+                                name="account_age_days"
+                                value="365"
+                                min="0"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="previous_fraud_count">
+                            PREVIOUS FRAUD FLAGS
+                        </label>
+
+                        <input
+                            type="number"
+                            id="previous_fraud_count"
+                            name="previous_fraud_count"
+                            value="0"
+                            min="0"
+                        >
+
+                    </div>
+
+
+                    <div class="checkbox-group">
+
+                        <label class="checkbox-label">
+
+                            <input
+                                type="checkbox"
+                                id="new_device"
+                                name="new_device"
+                            >
+
+                            <span class="custom-check"></span>
+
+                            <span>
+                                New device signature detected
+                            </span>
+
+                        </label>
+
+
+                        <label class="checkbox-label">
+
+                            <input
+                                type="checkbox"
+                                id="location_change"
+                                name="location_change"
+                            >
+
+                            <span class="custom-check"></span>
+
+                            <span>
+                                Location variance flag active
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        id="analyzeBtn"
+                        class="btn-submit">
+
+                        <span class="btn-label">
+                            EXECUTE RISK ANALYSIS
+                        </span>
+
+                        <span class="btn-spinner" hidden></span>
+
+                        <span class="submit-arrow">
+                            →
+                        </span>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- RIGHT COLUMN -->
+
+            <div class="right-col">
+
+
+                <!-- THRESHOLD CONTROL -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-icon">
+                            ◉
+                        </div>
+
+                        <div>
+
+                            <span class="panel-kicker">
+                                POLICY ENGINE
+                            </span>
+
+                            <h3 class="panel-title">
+                                Threshold Controls
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="slider-container">
+
+                        <div class="slider-header">
+
+                            <span>
+                                LOW RISK MAX
+                            </span>
+
+                            <span id="low-val"
+                                  class="slider-badge">
+                                30
+                            </span>
+
+                        </div>
+
+                        <input
+                            type="range"
+                            id="slider-low"
+                            class="range-slider"
+                            min="10"
+                            max="49"
+                            value="30"
+                        >
+
+                    </div>
+
+
+                    <div class="slider-container">
+
+                        <div class="slider-header">
+
+                            <span>
+                                MEDIUM RISK MAX
+                            </span>
+
+                            <span id="med-val"
+                                  class="slider-badge">
+                                70
+                            </span>
+
+                        </div>
+
+                        <input
+                            type="range"
+                            id="slider-med"
+                            class="range-slider"
+                            min="50"
+                            max="90"
+                            value="70"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- RISK ASSESSMENT -->
+
+                <div class="panel assessment-panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-icon">
+                            ◈
+                        </div>
+
+                        <div>
+
+                            <span class="panel-kicker">
+                                DECISION OUTPUT
+                            </span>
+
+                            <h3 class="panel-title">
+                                Risk Assessment
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="resultEmpty"
+                        class="placeholder-state">
+
+                        <div class="empty-orbit">
+                            <span></span>
+                        </div>
+
+                        <p>
+                            Submit a transaction to initialize
+                            the risk assessment engine.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="resultBody"
+                        class="analytics-outcome-body"
+                        hidden>
+
+                        <div class="metrics-summary">
+
+                            <div class="gauge-wrapper">
+
+                                <svg
+                                    class="gauge-svg"
+                                    width="160"
+                                    height="160">
+
+                                    <circle
+                                        class="gauge-bg"
+                                        cx="80"
+                                        cy="80"
+                                        r="68">
+                                    </circle>
+
+                                    <circle
+                                        id="gaugeFill"
+                                        class="gauge-fill"
+                                        cx="80"
+                                        cy="80"
+                                        r="68">
+                                    </circle>
+
+                                </svg>
+
+                                <div
+                                    id="gaugeScore"
+                                    class="gauge-text">
+                                    0
+                                </div>
+
+                                <span class="gauge-label">
+                                    RISK SCORE
+                                </span>
+
+                            </div>
+
+
+                            <div class="badge-stack">
+
+                                <div
+                                    id="riskLevelBadge"
+                                    class="risk-level-badge">
+                                    LOW RISK
+                                </div>
+
+                                <div
+                                    id="decisionStamp"
+                                    class="stamp">
+                                    APPROVE
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="bars-container">
+
+                            <div class="bar-group">
+
+                                <div class="bar-info">
+
+                                    <span>
+                                        ML MODEL SCORE
+                                    </span>
+
+                                    <span id="mlValue">
+                                        0%
+                                    </span>
+
+                                </div>
+
+                                <div class="bar-track">
+
+                                    <div
+                                        id="mlBar"
+                                        class="bar-fill">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="bar-group">
+
+                                <div class="bar-info">
+
+                                    <span>
+                                        HEURISTIC SCORE
+                                    </span>
+
+                                    <span id="ruleValue">
+                                        0%
+                                    </span>
+
+                                </div>
+
+                                <div class="bar-track">
+
+                                    <div
+                                        id="ruleBar"
+                                        class="bar-fill">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="analysis-reasons">
+
+                            <h4>
+                                DETECTION REASONING VECTORS
+                            </h4>
+
+                            <ul
+                                id="reasonsList"
+                                class="reasons-list">
+                            </ul>
+
+                        </div>
+
+
+                        <div
+                            id="warningsBlock"
+                            class="warnings-block"
+                            hidden>
+
+                            <h4>
+                                SYSTEM DISCREPANCIES
+                            </h4>
+
+                            <ul
+                                id="warningsList"
+                                class="warnings-list">
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SYSTEM METRICS -->
+
+                <div class="panel summary-ledger">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span class="panel-kicker">
+                                SYSTEM TELEMETRY
+                            </span>
+
+                            <h3 class="panel-title">
+                                Metrics Summary
+                            </h3>
+
+                        </div>
+
+                        <button
+                            id="refreshHistory"
+                            class="btn-refresh">
+                            ↻ Refresh
+                        </button>
+
+                    </div>
+
+
+                    <div class="metrics-pill-grid">
+
+                        <div class="metric-pill">
+                            Total:
+                            <span id="mTotal">—</span>
+                        </div>
+
+                        <div class="metric-pill low">
+                            Low:
+                            <span id="mLow">—</span>
+                        </div>
+
+                        <div class="metric-pill med">
+                            Medium:
+                            <span id="mMedium">—</span>
+                        </div>
+
+                        <div class="metric-pill high">
+                            High:
+                            <span id="mHigh">—</span>
+                        </div>
+
+                        <div class="metric-pill block">
+                            Blocked:
+                            <span id="mBlocked">—</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="engine-status">
+
+                        <span
+                            id="statusDot"
+                            class="status-dot offline">
+                        </span>
+
+                        <span id="statusLabel">
+                            Checking engine...
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- AUDIT HISTORY -->
+
+        <div class="panel history-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="panel-kicker">
+                        FORENSIC RECORD
+                    </span>
+
+                    <h3 class="panel-title">
+                        Audit Log History
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Location</th>
+                            <th>Risk Score</th>
+                            <th>Risk Level</th>
+                            <th>Action Triggered</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="historyBody">
+
+                        <tr class="empty-row">
+
+                            <td colspan="7">
+                                No transactions analyzed yet.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <footer class="console-footer">
+
+            <span>PAYGUARD AI</span>
+
+            <span>SECURE TRANSACTION INTELLIGENCE</span>
+
+            <span>v1.0 / ACTIVE</span>
+
+        </footer>
+
+    </section>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>

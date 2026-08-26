@@ -1,0 +1,25 @@
+{
+  "model_name": "LogisticRegression",
+  "cv_comparison": {
+    "LogisticRegression": {
+      "cv_pr_auc_mean": 0.46700261868173526,
+      "cv_pr_auc_std": 0.039278490584789216
+    },
+    "RandomForest": {
+      "cv_pr_auc_mean": 0.44743004028249356,
+      "cv_pr_auc_std": 0.019152039984573262
+    },
+    "HistGradientBoosting": {
+      "cv_pr_auc_mean": 0.3865339922026877,
+      "cv_pr_auc_std": 0.02743630389174839
+    }
+  },
+  "roc_auc": 0.7938254165868607,
+  "pr_auc": 0.4136032169138124,
+  "tuned_threshold": 0.8012402548694872,
+  "test_accuracy_default_threshold": 0.795,
+  "test_accuracy_tuned_threshold": 0.911,
+  "fraud_precision": 0.5217391304347826,
+  "fraud_recall": 0.391304347826087,
+  "fraud_f1": 0.44720496845430346
+}
