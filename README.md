@@ -1,172 +1,521 @@
-# PayGuard AI — Transaction Risk Detection & Automated Risk Assessment
+# 🛡️ PayGuard AI
 
-An AI-powered fraud risk engine that combines a trained ML model with a
-transparent rule engine to score, explain, and act on transactions in
-real time. Built as a final-year / internship project.
+### AI-Powered Transaction Risk Detection & Automated Fraud Assessment
 
----
+PayGuard AI is an intelligent transaction-risk assessment system that combines **machine learning** with a **transparent rule-based risk engine** to analyze transactions in real time, generate a risk score, explain the reasons behind that score, and recommend an appropriate action.
 
-## 1. What changed, and why (Phase 1 audit)
-
-The original prototype worked, but had several issues typical of a first
-pass at a fraud-detection project. Each is fixed in this version:
-
-| Area | Issue found | Fix |
-|---|---|---|
-| **ML evaluation** | Model was judged mainly on accuracy (0.79) on an imbalanced dataset (~88% legit / ~12% fraud), which hides how well fraud itself is caught. | Selection now uses cross-validated **PR-AUC** (precision-recall AUC), the correct metric for rare-event classification. Accuracy is still reported, but labeled as secondary. |
-| **Class imbalance** | No `class_weight` / resampling — the model had no extra incentive to learn the rare fraud class. | All three candidate models use `class_weight="balanced"`. |
-| **Threshold** | Implicit 0.5 decision threshold, which is arbitrary for imbalanced problems. | Threshold is tuned on held-out data to maximize fraud-class F1, saved alongside the model, and reused by the risk engine. |
-| **Model choice** | Random Forest was used without comparing alternatives. | `train_model.py` now cross-validates Logistic Regression, Random Forest, and HistGradientBoosting, and keeps whichever wins on PR-AUC. |
-| **Data leakage risk** | `transaction_id` / `customer_id` sitting next to feature columns is an easy accidental-leakage trap. | Explicitly excluded from `FEATURE_COLUMNS` in `preprocess.py`, with a comment explaining why. All preprocessing (`StandardScaler`, `OneHotEncoder`) lives inside a `Pipeline` fit only on the training split. |
-| **Split strategy** | Not stated whether the split was stratified. | `train_test_split(..., stratify=y)` — preserves the fraud rate in both train and test sets. |
-| **Risk engine** | Rule scoring logic wasn't visible/testable as a unit; ML and rule scores could end up conflated. | `risk_engine.py` computes ML score and rule score independently, combines them with a **named, documented formula**, and returns a `reasons` list for every rule that fired. |
-| **Backend paths** | Brief mentioned hardcoded paths as a risk. | Every path in `backend/main.py` is resolved via `pathlib.Path(__file__)`, so it works identically on Windows/macOS/Linux and regardless of the current working directory. |
-| **Error handling** | No structured handling for bad input or a missing model file. | Pydantic validates every field at the API boundary (positive amount, enums for categorical fields, bounded integers). A missing model returns a clean `503`, not a crash. Malformed transaction dicts are sanitized with logged `warnings` instead of raising. |
-| **Frontend/backend integration** | Fine in principle, but had no loading/error states or history. | Added spinner + disabled button while a request is in flight, inline error banner on failure, an "engine online/unreachable" indicator, and empty states for history. |
-| **UX** | Score shown as a number only. | Added a color-coded radial gauge, a stamped APPROVE/REVIEW/BLOCK badge, and a labeled ML-vs-rule score breakdown so the *why* is visible, not just the *what*. |
-
-**No dataset was uploaded**, so `data/generate_dataset.py` builds a
-synthetic ~5,000-row dataset that mirrors your described schema and class
-balance (fraud rate tied to the same signals the rule engine checks, plus
-random noise so it isn't trivially separable). **Replace
-`data/payguard_ai_transactions.csv` with your real data and re-run
-`ml/train_model.py`** — everything downstream (risk engine, API,
-dashboard) works unchanged either way, since it only depends on the
-column names, not this specific file.
+The system is designed to make fraud-risk decisions more **explainable, measurable, and practical** instead of relying only on a single ML prediction.
 
 ---
 
-## 2. On the "90% accuracy" target — read this before you present
+## 🎯 Problem Statement
 
-Your dataset is ~88% legitimate transactions. That means **a model that
-predicts "not fraud" for every single transaction already scores ~88%
-accuracy** while catching zero fraud — it would be a useless, and
-actively dangerous, fraud detector. This is why accuracy alone is a
-misleading headline metric for fraud detection, and why the original
-0.79-accuracy model with 0.55 fraud recall was, in a real sense, doing
-*more useful work* than a 90%+ model that just predicts "safe" most of
-the time.
+Digital payment fraud is becoming increasingly difficult to detect because suspicious transactions can appear similar to legitimate transactions.
 
-With this synthetic dataset, the selected model (Logistic Regression,
-chosen over Random Forest / HistGradientBoosting by cross-validated
-PR-AUC) gets:
+A simple fraud classifier may also perform poorly when the dataset is imbalanced, because legitimate transactions usually outnumber fraudulent ones by a large margin.
 
-| Metric | Value |
-|---|---|
-| ROC-AUC | 0.79 |
-| PR-AUC (average precision) | 0.41 |
-| Test accuracy (tuned threshold) | **0.91** |
-| Fraud precision | 0.52 |
-| Fraud recall | 0.39 |
-| Fraud F1 | 0.45 |
+PayGuard AI addresses this challenge by combining:
 
-So you *do* clear 90% accuracy here — genuinely, at a threshold chosen to
-maximize F1, not by degenerately predicting the majority class (recall is
-still 39%, i.e. the model is really catching fraud). **When you retrain
-on your real data, the exact numbers will move.** If a reviewer asks
-about the accuracy number, the strongest answer is: *"Accuracy is 91%,
-but the metric that actually matters here is fraud recall/precision,
-because the classes are imbalanced — here's the confusion matrix and
-PR-AUC that show the model is catching real fraud, not just guessing the
-majority class."* That's a stronger, more senior answer than quoting
-accuracy alone, and it's exactly the kind of thing an internship
-interviewer is listening for.
+- Machine-learning-based fraud probability
+- Rule-based transaction risk signals
+- Tunable decision thresholds
+- Explainable risk indicators
+- A real-time web dashboard
+- Backend APIs for transaction analysis and history
 
-If you want to push fraud recall higher (catch more fraud, at the cost of
-more false positives / lower accuracy), lower the threshold in
-`ml/train_model.py`'s `find_best_threshold` — e.g. constrain to
-`recall >= 0.6` instead of pure F1 — and re-train.
+The goal is to provide a risk decision that is not only predictive, but also understandable.
 
 ---
 
-## 3. Project structure
+## 💡 Solution
 
+PayGuard AI processes transaction information through an ML model and an independent rule engine.
+
+The two risk components are combined into a final risk score:
+
+```text
+Final Risk Score = (ML Score × 0.70) + (Rule Score × 0.30)
 ```
+
+The resulting score is converted into an actionable decision:
+
+| Risk Score | Risk Level | Decision |
+|---:|---|---|
+| 0–30 | LOW | ✅ APPROVE |
+| 31–70 | MEDIUM | ⚠️ REVIEW |
+| 71–100 | HIGH | 🚫 BLOCK |
+
+The application also provides the reasons that contributed to the rule-based risk score, making the final decision easier to understand.
+
+---
+
+## ✨ Key Features
+
+### 🤖 Machine Learning Fraud Detection
+- Compares multiple candidate classification models.
+- Uses cross-validated **PR-AUC** for model selection.
+- Handles class imbalance using balanced class weights.
+- Uses a tuned decision threshold instead of blindly relying on 0.5.
+- Keeps preprocessing inside the ML pipeline.
+
+### 🔎 Explainable Risk Assessment
+- Separates the ML score from the rule score.
+- Displays the combined risk score.
+- Provides reasons for triggered risk indicators.
+- Converts the score into APPROVE, REVIEW, or BLOCK.
+
+### ⚡ Real-Time Transaction Analysis
+- FastAPI backend exposes transaction-analysis endpoints.
+- Input validation is performed at the API boundary.
+- Invalid requests receive structured errors.
+- Missing model files are handled without crashing the server.
+
+### 📊 Interactive Dashboard
+- Transaction analysis interface
+- Risk-score visualization
+- Decision badge
+- ML-vs-rule score breakdown
+- Transaction history
+- Analytics
+- Loading and error states
+- Backend availability indicator
+
+### 🧪 Testing
+The project includes automated tests for the risk-engine scenarios.
+
+---
+
+## 🧠 How the AI Works
+
+```text
+Transaction Input
+       │
+       ▼
+Input Validation & Preprocessing
+       │
+       ├─────────────────────┐
+       ▼                     ▼
+ ML Fraud Model       Rule-Based Engine
+       │                     │
+       ▼                     ▼
+   ML Score              Rule Score
+       │                     │
+       └──────────┬──────────┘
+                  ▼
+        Weighted Risk Score
+                  │
+                  ▼
+       Risk Level & Decision
+       ┌──────────┼──────────┐
+       ▼          ▼          ▼
+    APPROVE     REVIEW      BLOCK
+                  │
+                  ▼
+        Explainable Risk Reasons
+```
+
+### Model Selection
+
+The training pipeline compares:
+
+- Logistic Regression
+- Random Forest
+- HistGradientBoosting
+
+The model-selection process uses **cross-validated PR-AUC**, which is more informative than accuracy alone for rare-event fraud classification.
+
+### Data Handling
+
+The preprocessing pipeline:
+
+- Removes identifier fields such as transaction/customer IDs from model features.
+- Handles numerical and categorical features.
+- Uses `StandardScaler` for numerical preprocessing.
+- Uses `OneHotEncoder` for categorical preprocessing.
+- Fits preprocessing only on the training data through the pipeline.
+
+### Decision Threshold
+
+Instead of assuming a fixed 0.5 threshold, the training process tunes the threshold using held-out data to improve fraud-class F1 performance.
+
+---
+
+## 🧮 Risk Engine
+
+The risk engine independently calculates:
+
+### 1. ML Score
+
+The trained classification pipeline produces the machine-learning fraud-risk component.
+
+### 2. Rule Score
+
+The rule engine evaluates transaction signals such as:
+
+- Unusually high transaction amount
+- New device
+- Location change
+- High transaction velocity
+- New account
+- Previous fraud history
+
+### 3. Combined Score
+
+```text
+Final Risk Score
+= (ML Score × 0.70)
++ (Rule Score × 0.30)
+```
+
+### 4. Final Decision
+
+```text
+0–30   → LOW    → APPROVE
+31–70  → MEDIUM → REVIEW
+71–100 → HIGH   → BLOCK
+```
+
+This approach combines statistical prediction with understandable transaction-risk signals.
+
+---
+
+## 🏗️ System Architecture
+
+```text
+┌───────────────────────────────┐
+│        Web Dashboard          │
+│      HTML / CSS / JavaScript  │
+└───────────────┬───────────────┘
+                │ HTTP API
+                ▼
+┌───────────────────────────────┐
+│        FastAPI Backend        │
+│  Validation / Analysis / API  │
+└───────────────┬───────────────┘
+                │
+        ┌───────┴────────┐
+        ▼                ▼
+┌───────────────┐  ┌────────────────┐
+│ ML Prediction │  │  Risk Engine   │
+│   Pipeline    │  │ Rule Scoring   │
+└───────┬───────┘  └───────┬────────┘
+        │                  │
+        └────────┬─────────┘
+                 ▼
+        Final Risk Assessment
+                 │
+                 ▼
+       Decision + Explanation
+```
+
+---
+
+## 🛠️ Technology Stack
+
+### Frontend
+- HTML5
+- CSS3
+- JavaScript
+
+### Backend
+- Python
+- FastAPI
+- Uvicorn
+- Pydantic
+
+### Machine Learning
+- Scikit-learn
+- Logistic Regression
+- Random Forest
+- HistGradientBoosting
+- StandardScaler
+- OneHotEncoder
+- ML Pipeline
+
+### Data & Storage
+- CSV transaction datasets
+- SQLite transaction history
+
+### Testing
+- Python `unittest`
+
+### Development
+- Git / GitHub
+- VS Code
+- Python Virtual Environment
+
+---
+
+## 📁 Project Structure
+
+```text
 PayGuard-AI/
-├── data/
-│   ├── generate_dataset.py        # only needed until you have real data
-│   ├── payguard_ai_transactions.csv
-│   └── cleaned_transactions.csv   # written by train_model.py
-├── ml/
-│   ├── __init__.py
-│   ├── preprocess.py              # shared feature/column definitions
-│   ├── train_model.py             # trains + compares + saves the model
-│   ├── risk_engine.py             # ML score + rule score + decision
-│   ├── fraud_model.pkl            # trained pipeline (generated)
-│   └── model_metrics.json         # last training run's metrics (generated)
+│
 ├── backend/
-│   └── main.py                    # FastAPI: /analyze /history /analytics
+│   └── main.py
+│
+├── data/
+│   ├── generate_dataset.py
+│   ├── payguard_ai_transactions.csv
+│   ├── cleaned_transactions.csv
+│   └── payguard_history.db
+│
 ├── frontend/
 │   ├── index.html
 │   ├── style.css
 │   └── script.js
+│
+├── ml/
+│   ├── __init__.py
+│   ├── preprocess.py
+│   ├── train_model.py
+│   ├── risk_engine.py
+│   ├── fraud_model.pkl
+│   └── model_metrics.json
+│
 ├── tests/
-│   └── test_risk_engine.py        # the 8 scenarios from the brief
+│   ├── __init__.py
+│   └── test_risk_engine.py
+│
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## 4. Running it
+## 📊 Model Performance
+
+The current project metrics reported by the training pipeline are:
+
+| Metric | Value |
+|---|---:|
+| ROC-AUC | 0.79 |
+| PR-AUC / Average Precision | 0.41 |
+| Test Accuracy | **0.91** |
+| Fraud Precision | 0.52 |
+| Fraud Recall | 0.39 |
+| Fraud F1 | 0.45 |
+
+### Why Accuracy Is Not the Only Metric
+
+Fraud datasets are typically imbalanced. A model can achieve high accuracy simply by predicting the majority class.
+
+Therefore, PayGuard AI considers **PR-AUC, precision, recall, and F1** alongside accuracy when evaluating fraud-detection performance.
+
+> **Note:** These metrics are based on the current synthetic dataset/training run. Performance can change when the model is retrained on different or real-world data.
+
+---
+
+## 🖼️ Screenshots
+
+Add your final application screenshots to a folder such as:
+
+```text
+screenshots/
+├── dashboard.png
+├── transaction-analysis.png
+├── risk-result.png
+└── analytics.png
+```
+
+Then add them here:
+
+### Dashboard
+
+![PayGuard AI Dashboard](screenshots/dashboard.png)
+
+### Transaction Risk Analysis
+
+![Transaction Risk Analysis](screenshots/transaction-analysis.png)
+
+### Risk Result & Explanation
+
+![Risk Result](screenshots/risk-result.png)
+
+> Replace the image paths above with the actual screenshot filenames included in your repository.
+
+---
+
+## 🚀 Installation & Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/shaik-tabassum/PayGuard-AI.git
+cd PayGuard-AI
+```
+
+### 2. Create a Virtual Environment
+
+#### Windows
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+#### macOS / Linux
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
+```
 
-# 1. (Re)train the model — writes ml/fraud_model.pkl
+### 4. Train the Model
+
+```bash
 python ml/train_model.py
+```
 
-# 2. Run the tests
+This generates/updates the trained model and model metrics.
+
+### 5. Run Tests
+
+```bash
 python -m unittest tests.test_risk_engine -v
+```
 
-# 3. Start the API (from the project root)
+### 6. Start the Backend
+
+From the project root:
+
+```bash
 uvicorn backend.main:app --reload
-# Swagger UI: http://127.0.0.1:8000/docs
+```
 
-# 4. Open the dashboard
-# Just open frontend/index.html in a browser (or serve it with:
+Backend:
+
+```text
+http://127.0.0.1:8000
+```
+
+Swagger API documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+### 7. Start the Frontend
+
+You can serve the frontend using:
+
+```bash
 python -m http.server 5500 --directory frontend
-# then visit http://127.0.0.1:5500 )
 ```
 
-The frontend calls the API at `http://127.0.0.1:8000` — update
-`API_BASE` at the top of `frontend/script.js` if you deploy the backend
-elsewhere.
+Then open:
+
+```text
+http://127.0.0.1:5500
+```
+
+The frontend communicates with the FastAPI backend.
 
 ---
 
-## 5. Risk engine formula
+## 🎥 Demo Video
 
+**5-Minute Pitch and Live Demo**
+
+> Add your final YouTube/Google Drive demo link here.
+
+```text
+[Watch the PayGuard AI Demo](YOUR-DEMO-LINK)
 ```
-Final Risk Score = (ML Score × 0.70) + (Rule Score × 0.30)
 
-0–30   → LOW    → APPROVE
-31–70  → MEDIUM → REVIEW
-71–100 → HIGH   → BLOCK
-```
+The recommended demo flow is:
 
-Rule score is a capped sum of independent signals (unusually high amount,
-new device, location change, transaction velocity, new account, prior
-fraud history) — see `ml/risk_engine.py::_rule_score` for the exact point
-values and reasoning for each one.
-
-Re-running the brief's original test transaction (₹100,000, new device,
-location change, 10 tx/hour, 20-day-old account, 2 prior fraud flags)
-against this version now returns **HIGH / BLOCK** with all five risk
-indicators listed, instead of the original MEDIUM / REVIEW.
+1. Introduce the fraud-detection problem.
+2. Explain the PayGuard AI solution.
+3. Show the system architecture.
+4. Demonstrate a normal transaction.
+5. Demonstrate a suspicious/high-risk transaction.
+6. Show the ML and rule-score breakdown.
+7. Explain the final APPROVE / REVIEW / BLOCK decision.
+8. Highlight the project's technical contribution.
 
 ---
 
-## 6. Next steps worth doing before you present
+## 🧪 Testing
 
-- Swap in your real `payguard_ai_transactions.csv` and re-train.
-- Add a confusion-matrix / ROC-curve screenshot to your slides — it's a
-  more convincing artifact than a single accuracy number.
-- If you want probability calibration (so "70% fraud probability" really
-  means ~70% of such transactions are fraud), add
-  `CalibratedClassifierCV` around the winning estimator in
-  `train_model.py`.
-- Consider adding basic auth or an API key to `/analyze` before calling
-  this "production-ready" in your writeup — right now CORS is wide open
-  (`allow_origins=["*"]`), which is fine for a local demo but should be
-  called out as a known limitation, not left unmentioned.
+The project includes risk-engine tests covering transaction-risk scenarios.
+
+Run:
+
+```bash
+python -m unittest tests.test_risk_engine -v
+```
+
+Testing focuses on validating the risk assessment and decision logic.
+
+---
+
+## 🔐 Security & Limitations
+
+PayGuard AI is currently designed as a project/demo application.
+
+Before production deployment, the following improvements should be considered:
+
+- Authentication and authorization
+- Secure API-key/secret management
+- Restricted CORS configuration
+- HTTPS/TLS
+- Production database configuration
+- Model monitoring and drift detection
+- Probability calibration
+- Additional real-world fraud data
+- More extensive security testing
+
+The current wide-open CORS configuration is suitable for local demonstration but should be restricted for production use.
+
+---
+
+## 🔮 Future Scope
+
+Potential future enhancements include:
+
+- Integration with real payment transaction streams
+- Real-time fraud monitoring
+- Advanced anomaly-detection models
+- Model probability calibration
+- Continuous model retraining
+- Fraud-pattern monitoring and alerts
+- Role-based access control
+- Secure cloud deployment
+- Advanced analytics and reporting
+- Explainable AI visualizations
+- Model drift and performance monitoring
+
+---
+
+## 🌟 Why PayGuard AI?
+
+PayGuard AI goes beyond a simple **"fraud / not fraud"** prediction.
+
+It combines:
+
+**Machine Learning + Rule-Based Intelligence + Explainability + Real-Time Risk Scoring**
+
+to provide a practical transaction-risk assessment that helps users understand **what the system decided and why**.
+
+---
+
+## 👥 Project
+
+**PayGuard AI**
+
+AI-powered transaction risk detection and automated fraud assessment.
+
+Built as an academic/hackathon project focused on applying machine learning and explainable decision logic to digital transaction security.
+
+---
+
+## 📄 License
+
+This project is intended for academic, demonstration, and hackathon purposes.
