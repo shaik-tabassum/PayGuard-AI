@@ -1,2 +1,13 @@
 
+# Python binary files
 __pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# Local databases (optional, if generated dynamically)
+*.db
+
+# VS Code settings
+.vscode/
