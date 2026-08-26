@@ -310,9 +310,9 @@ Therefore, PayGuard AI considers **PR-AUC, precision, recall, and F1** alongside
 
 ### Dashboard
 
-![PayGuard AI Dashboard](screenshots/dashboard1.png.png)
+![PayGuard AI Dashboard](screenshots/Dashboard1.png.png)
 
-![PayGuard AI Dashboard](screenshots/dashboard2.png.png)
+![PayGuard AI Dashboard](screenshots/Dashboard2.png.png)
 
 ### Transaction Risk Analysis and Risk-result
 
