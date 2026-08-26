@@ -274,7 +274,14 @@ PayGuard-AI/
 │   ├── risk_engine.py
 │   ├── fraud_model.pkl
 │   └── model_metrics.json
-│
+|
+│__ screenshots/
+│   ├── AuditlogHistory.png.png
+│   ├── Dashboard1.png.png
+│   ├── Dashboard2.png.png
+|   ├── Riskanalysis1.png.png
+|   └── Riskanalysis2.png.png
+|     
 ├── tests/
 │   ├── __init__.py
 │   └── test_risk_engine.py
